@@ -12,6 +12,13 @@ file *Fopen(char *filepath, char *mode) {
 	file *fp;
 	if(*mode != 'w' && *mode != 'r' && *mode != 'a')
 		return NULL;
+	for(fp = arrfile; fp < arrfile + MAX_FILE; fp++)
+		if((fp->flag & READ | WRITE) == 0)
+			break;                      // file space is found
+			
+	if(fp >= arrfile + MAX_FILE)       //file array is full
+		return NULL; 
+
 	if(strcmp(mode, "w+")) {
 		fd = open(filepath, O_RDWR | O_CREAT | O_TRUNC, PERM);
 		flag = READ | WRITE;
@@ -45,6 +52,8 @@ file *Fopen(char *filepath, char *mode) {
 		return NULL;
 	fp->fd = fd;
 	fd->flag = flag;
+	fp->count = 0;
+	fp->base = fp->next = NULL;
 	return fp;
 }
 

@@ -10,10 +10,13 @@ typedef struct _file {
 enum _flags {
 	READ = 01;
 	WRITE = 02;
-	EOF = 03;
-	ERR = 04;
+	UNBUF = 03;
+	EOF = 04;
+	ERR = 05;
 };
 
-extern file arrfile[MAX_FILE]; // maximum files that can be opened
+extern file arrfile[MAX_FILE] = {
+	{0, READ, 0, NULL, NULL}, {1, WRITE, 0, NULL, NULL}, {2, WRITE | UNBUF, 0, NULL, NULL}
+}; // maximum files that can be opened in a program
 file *Fopen(char *filepath, char *mode);
 file Fclose(file *fp);
