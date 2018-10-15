@@ -3,6 +3,7 @@ typedef struct _file {
 	int flags; // mode of opening of file
 }file;
 #define MAX_SIZE 20
+#define PERM 0666  //permission of rd, wr, excute for owner, group & all other
 enum _flags {
 	_READ = 01;
 	_WRITE = 02;

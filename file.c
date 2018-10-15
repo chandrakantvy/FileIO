@@ -4,33 +4,47 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <errno.h>
 #include <string.h>
-#include <limits.h>
 #include "file.h"
-file *Fopen(char const *filepath, char const *mode) {
-	file *fp = (file*)malloc(sizeof(file));
-	
-	if(!strcmp("w", mode)) 
-		fp->mode = O_WRONLY | O_CREAT | O_TRUNC;
-	else if(!strcmp("r", mode)) 
-		fp->mode = O_RDONLY;
-	else if(!strcmp("a", mode)) 
-		fp->mode = O_APPEND | O_CREAT;
-	else if(!strcmp("w+", mode))
-		fp->mode = O_RDWR | O_CREAT | O_TRUNC;
-	else if(!strcmp("r+", mode)) 
-		fp->mode = O_RDWR;
-	else if(!strcmp("a+", mode))
-		fp->mode = O_APPEND | O_CREAT;
-	else
-		fp->err = EINVAL;
-	
-	fp->flags = open(filepath, fp->mode);
-	if(fp->flags){
-		free(fp);
-		fp = NULL;	
+
+file *Fopen(char *filepath, char *mode) {
+	int fd, flag;
+	file *fp;
+	if(*mode != 'w' && *mode != 'r' && *mode != 'a')
+		return NULL;
+	if(strcmp(mode, "w+")){
+		fd = open(filepath, O_RDWR | O_CREAT | O_TRUNC, PERM);
+		flag = O_RDWR | O_CREAT | O_TRUNC;
 	}	
+	else if (strcmp(mode, "a+")) {
+		fd = open(filepath, O_RDWR | O_CREAT | O_APPEND, PERM);
+		flag = O_RDWR | O_CREAT | O_APPEND;
+	}
+	else if(strcmp(mode, "r+")) {
+		fd = open(filepath, O_RDWR, PERM);
+		flag = O_RDWR;
+	}
+	else if(strcmp(strcmp(mode, "w")) {
+		fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, PERM);
+		flag = O_WRONLY | O_CREAT | O_TRUNC
+	}
+	else if(strcmp(mode, "a")) {
+		fd = open(filepath, O_WRONLY | O_CREAT | O_APPEND, PERM);
+		flag = O_WRONLY | O_CREAT | O_APPEND;
+	}
+	else if(strcmp(mode, "r")) {
+		fd = open(filepath, O_RDONLY, 0);
+		flag = O_RDONLY;
+	}
+	else {
+		fd = -1;
+		flag = 0;
+		return NULL;
+	}
+	if(fd == -1)
+		return NULL;
+	fp->fd = fd;
+	fd->flag = flag;
 	return fp;
 }
 
