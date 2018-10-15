@@ -12,33 +12,33 @@ file *Fopen(char *filepath, char *mode) {
 	file *fp;
 	if(*mode != 'w' && *mode != 'r' && *mode != 'a')
 		return NULL;
-	if(strcmp(mode, "w+")){
+	if(strcmp(mode, "w+")) {
 		fd = open(filepath, O_RDWR | O_CREAT | O_TRUNC, PERM);
-		flag = O_RDWR | O_CREAT | O_TRUNC;
+		flag = READ | WRITE;
 	}	
 	else if (strcmp(mode, "a+")) {
 		fd = open(filepath, O_RDWR | O_CREAT | O_APPEND, PERM);
-		flag = O_RDWR | O_CREAT | O_APPEND;
+		flag = READ | WRITE;
 	}
 	else if(strcmp(mode, "r+")) {
-		fd = open(filepath, O_RDWR, PERM);
-		flag = O_RDWR;
+		fd = open(filepath, O_RDWR, 0);
+		flag = READ | WRITE;
 	}
 	else if(strcmp(strcmp(mode, "w")) {
 		fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, PERM);
-		flag = O_WRONLY | O_CREAT | O_TRUNC
+		flag = WRITE;
 	}
 	else if(strcmp(mode, "a")) {
 		fd = open(filepath, O_WRONLY | O_CREAT | O_APPEND, PERM);
-		flag = O_WRONLY | O_CREAT | O_APPEND;
+		flag = WRITE;
 	}
 	else if(strcmp(mode, "r")) {
 		fd = open(filepath, O_RDONLY, 0);
-		flag = O_RDONLY;
+		flag = READ;
 	}
 	else {
 		fd = -1;
-		flag = 0;
+		flag = ERR;
 		return NULL;
 	}
 	if(fd == -1)
