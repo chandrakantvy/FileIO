@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[]) {
 	file *fp;
-	int i = 12345;
+	char ch[11];
 	fp = Fopen(argv[1], "a+");
 	if(fp == NULL) {
 		printf("%d", fp->fd);
@@ -11,6 +11,9 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}	
 	Fwrite("chandrakant", 11, 1, fp);
-	printf("%s", fp->base);
+	Fread(&ch, 11, 1, fp);
+	Fseek(fp, 2, SEEK_SET);
+	Fread(&ch, 9, 1, fp);
+	printf("%s", ch);
 	return 0;
 }

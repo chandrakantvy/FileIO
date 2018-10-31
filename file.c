@@ -54,7 +54,7 @@ file *Fopen(char *filepath, char *mode) {
 	fp->fd = fd;
 	fp->flag = flag;
 	fp->count = 0;
-	fp->base = fp->next = NULL;
+	fp->base = fp->next = fp->var = NULL;
 	if(strcmp(mode, "a+") || strcmp(mode, "r"))
 		fillbuff(fp);
 	return fp; 
@@ -71,26 +71,33 @@ size_u Fwrite(void *buf, size_u size, size_u nmemb, file *fp) {
 		buffer = buffer + size;	
 		sum = sum + x;		
 	}
-	fillbuff(fp);	
+	int buffsize = checkbuff(fp);
+	char *str = (char *)buf;
+	while(*str != '\0' && buffsize--) {
+		*(fp->var)++ = *str++;
+		if(fp->var == fp->next) {
+			(fp->next)++;		
+		}	
+	}
 	return sum;	
 }
-/*
-size_u Fread(void *buf, size_u size, size_u nmemb, file *fp) {
-	
 
-} */
+size_u Fread(void *buf, size_u size, size_u nmemb, file *fp) {
+	size_u n = 0, x = size;
+	char *str = (char *)buf;
+	while(nmemb--) {
+		while(x--){
+			*str++ = *fp->var++;
+			if(*fp->var == '\0')
+				break;
+		}		
+		n++;	
+	}
+	return n;
+}
 
 void fillbuff(file *fp) {
-	int buffsize;
-	if((fp->flag & (READ | _EOF | _ERR)) != READ) {
-		return;
-	}
-	
-	buffsize = (fp->flag & UNBUF) ? 1 : BUFFSIZE;
-	
-	if(fp->base == NULL)
-		if((fp->base = fp->next = (char *)malloc(buffsize)) == NULL)
-			return;
+	int buffsize = checkbuff(fp);
 	if(!(fp->count))
 		fp->base = fp->next;
 	fp->count = read(fp->fd, fp->next, buffsize);
@@ -98,8 +105,88 @@ void fillbuff(file *fp) {
 	*(fp->next) = '\0';
 }
 
+size_u checkbuff(file *fp) {
+	size_u buffsize;
+	if((fp->flag & (READ | _EOF | _ERR)) != READ) {
+		return _ERR;
+	}
+	
+	buffsize = (fp->flag & UNBUF) ? 1 : BUFFSIZE;
+	
+	if(fp->base == NULL)
+		if((fp->base = fp->var = fp->next = (char *)malloc(buffsize)) == NULL)
+			return buffsize;
+	return (BUFFSIZE - strlen(fp->base));
+}
 
+long Ftell(file *fp) {
+	return (fp->var - fp->base);
+}
 
+int Fseek(file *fp, long offset, int whence) {
+	int returnvalue;
+	long n = offset;
+	returnvalue = lseek(fp->fd, offset, whence);
+	if(returnvalue != -1) {
+		switch(whence) {
+			
+			case(SEEK_SET):
+				fp->var = fp->base;
+				while(n--) {
+					fp->var++;
+					if(fp->var == fp->next)
+						break;
+				}
+				if(fp->var == fp->next && n) {
+					while(n--) {
+						*(fp->var) = '\0';
+						fp->next++;
+						fp->var++;
+				
+					}
+				}
+			case(SEEK_CUR):
+				while(n--) {
+					fp->var++;
+					if(fp->var == fp->next)
+						break;
+				}
+				if(fp->var == fp->next && n) {
+					while(n--) {
+						*(fp->var) = '\0';
+						fp->next++;
+						fp->var++;
+				
+					}
+				}
+			case(SEEK_END):	
+				fp->var = fp->next;
+				while(n--) {
+					fp->var++;
+					if(fp->var == fp->next)
+						break;
+				}
+				if(fp->var == fp->next && n) {
+					while(n--) {
+						*(fp->var) = '\0';
+						fp->next++;
+						fp->var++;
+				
+					}
+				}
+			default :
+				return _ERR;
+		}	
+	}
+	return returnvalue;
+}
+int Fclose(file *fp) {
+	int returnvalue;
+	free(fp->base);
+	returnvalue = close(fp->fd);
+	free(fp);
+	return returnvalue;
+}
 
 
 

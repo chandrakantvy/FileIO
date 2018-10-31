@@ -4,6 +4,7 @@ typedef struct _file {
 	int count; //count the number of character left 
 	char *base; //base address of the buffer
 	char *next; // next charecter position
+	char *var;
 }file;
 
 enum _flags {
@@ -30,5 +31,14 @@ typedef unsigned int size_u;
 
 file *Fopen(char *filepath, char *mode);
 size_u Fwrite(void *buf, size_u size, size_u nmemb, file *fp);
+size_u Fread(void *buf, size_u size, size_u nmemb, file *fp);
+int Fseek(file *fp, long offset, int whence);
+long Ftell(file *fp);
+int Fclose(file *fp);
+
+
+size_u checkbuff(file *fp);
 void fillbuff(file *fp);
-file Fclose(file *fp);
+
+
+
