@@ -1,7 +1,7 @@
 typedef struct _file {
 	int fd; //file descreptor
 	int flag; // purpose of opening of file
-	int count; //count the number of character left 
+	long count; //count the number of character left 
 	char *base; //base address of the buffer
 	char *next; // next charecter position
 	char *var;
@@ -35,6 +35,7 @@ size_u Fread(void *buf, size_u size, size_u nmemb, file *fp);
 int Fseek(file *fp, long offset, int whence);
 long Ftell(file *fp);
 int Fclose(file *fp);
+int Feof(file *fp);
 
 
 size_u checkbuff(file *fp);
