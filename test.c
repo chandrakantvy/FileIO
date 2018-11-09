@@ -3,17 +3,18 @@
 
 int main(int argc, char *argv[]) {
 	file *fp;
-	char ch[11];
-	fp = Fopen(argv[1], "a+");
+	int j;
+
+	fp = Fopen(argv[1], "r");
 	if(fp == NULL) {
-		printf("%d", fp->fd);
 		printf("file couldn't open\n");	
 		return 1;
-	}	
-	Fwrite("chandrakant", 11, 1, fp);
-	Fread(&ch, 11, 1, fp);
-	Fseek(fp, 2, SEEK_SET);
-	Fread(&ch, 9, 1, fp);
-	printf("%s", ch);
+	}
+	//int i = 200;
+	//Fwrite(&i, sizeof(int), 1, fp);
+	//Fseek(fp, 0, SEEK_SET);
+	Fread(&j, 4, 1, fp);
+	printf("%d", j);
+	Fclose(fp);
 	return 0;
 }
